@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN // admin utama: semua menu
+  EDITOR // pengelola isi: kabar, dokumen, foto, pengaduan
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique @db.VarChar(40)
+  name           String   @db.VarChar(120)
+  passwordHash   String   @db.VarChar(200)
+  role           Role     @default(EDITOR)
+  // naik setiap kata sandi diganti, supaya sesi lama tidak berlaku lagi
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  posts          Post[]
+}
+
+enum PostType {
+  BERITA
+  PENGUMUMAN
+  AGENDA
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  type        PostType
+  status      PostStatus @default(DRAFT)
+  title       String     @db.VarChar(200)
+  body        String     @db.Text
+  imageUrl    String?    @db.VarChar(255)
+  eventAt     DateTime?
+  eventPlace  String?    @db.VarChar(200)
+  organizer   String?    @db.VarChar(200)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  author      User?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId    Int?
+
+  @@index([type, status, publishedAt])
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  album     String   @db.VarChar(120)
+  caption   String   @db.VarChar(200)
+  url       String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(300)
+  category  String   @db.VarChar(40)
+  year      Int
+  fileUrl   String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+}
+
+enum ReportType {
+  PENGADUAN
+  DOKUMEN
+  USULAN
+}
+
+enum ReportStatus {
+  BARU
+  DIBACA
+  DIKERJAKAN
+  SELESAI
+}
+
+model Report {
+  id        Int          @id @default(autoincrement())
+  code      String       @unique @db.VarChar(12)
+  type      ReportType
+  status    ReportStatus @default(BARU)
+  body      String       @db.Text
+  name      String       @db.VarChar(120)
+  phone     String       @db.VarChar(20)
+  banjar    String       @db.VarChar(60)
+  // nama file di folder privat, bukan URL publik
+  photoFile String?      @db.VarChar(80)
+  reply     String?      @db.Text
+  createdAt DateTime     @default(now())
+  readAt    DateTime?
+  doneAt    DateTime?
+  updatedAt DateTime     @updatedAt
+
+  @@index([phone])
+  @@index([status])
+}
+
+enum OfficialGroup {
+  PERANGKAT
+  KELIAN
+  STAF
+}
+
+model Official {
+  id       Int           @id @default(autoincrement())
+  name     String        @db.VarChar(120)
+  position String        @db.VarChar(120)
+  group    OfficialGroup
+  photoUrl String?       @db.VarChar(255)
+  sort     Int           @default(0)
+}
+
+enum BudgetCategory {
+  PENDAPATAN
+  BELANJA
+  PEMBIAYAAN
+}
+
+model BudgetLine {
+  id       Int            @id @default(autoincrement())
+  year     Int
+  category BudgetCategory
+  label    String         @db.VarChar(200)
+  planned  BigInt
+  realized BigInt
+  sort     Int            @default(0)
+
+  @@index([year])
+}
+
+// profil (visi, misi, sejarah), penduduk, dan tanggal pembaruan anggaran
+model Setting {
+  key       String   @id @db.VarChar(40)
+  value     Json
+  updatedAt DateTime @updatedAt
+}
