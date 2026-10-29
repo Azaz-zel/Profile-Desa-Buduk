@@ -1,0 +1,8 @@
+node_modules
+**/node_modules
+**/dist
+**/.env
+apps/api/uploads
+apps/api/private-uploads
+.git
+.claude

@@ -132,7 +132,7 @@ describe('pengaduan warga', () => {
     const byCode = await request(app.getHttpServer()).get('/api/reports/status').query({ q: code.toLowerCase() }).expect(200);
     expect(byCode.body.report.summary).toContain('Lampu jalan mati');
     const byPhone = await request(app.getHttpServer()).get('/api/reports/status').query({ q: '0812-3456-7890' }).expect(200);
-    expect(byPhone.body.reports[0]).toEqual({ code, status: 'BARU', createdAt: expect.any(String) });
+    expect(byPhone.body.reports[0]).toEqual({ code: code.slice(0, 6) + '***', status: 'BARU', createdAt: expect.any(String) });
     expect(JSON.stringify(byPhone.body)).not.toContain('Lampu');
     await request(app.getHttpServer()).get('/api/reports/status').query({ q: 'ADU-ZZZZZ' }).expect(404);
   });

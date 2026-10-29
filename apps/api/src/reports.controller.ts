@@ -63,7 +63,8 @@ export class ReportsController {
         select: { code: true, status: true, createdAt: true },
       });
       if (!list.length) throw new NotFoundException('Laporan tidak ditemukan');
-      return { kind: 'list', reports: list };
+      // nomor HP orang lain mudah diketahui, jadi kode disamarkan: isi laporan tetap hanya bisa dibuka dengan kode lengkap
+      return { kind: 'list', reports: list.map((r) => ({ ...r, code: r.code.slice(0, 6) + '***' })) };
     }
     throw new BadRequestException('Ketik kode laporan (contoh ADU-7K3QP) atau nomor WhatsApp');
   }
