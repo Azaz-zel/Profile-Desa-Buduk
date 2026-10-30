@@ -9,7 +9,7 @@ export class ApiError extends Error {
 const FRIENDLY: Record<number, string> = {
   401: 'Sesi sudah berakhir, silakan masuk lagi.',
   403: 'Menu ini khusus admin utama.',
-  413: 'File terlalu besar.',
+  413: 'File terlalu besar. Foto paling besar 5 MB, PDF paling besar 15 MB.',
   429: 'Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.',
 };
 
@@ -31,7 +31,9 @@ export async function api<T>(path: string, opts: { method?: string; body?: unkno
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg = Array.isArray(data.message) ? data.message[0] : data.message;
-    throw new ApiError(res.status, (res.status !== 401 && res.status !== 403 && msg) || FRIENDLY[res.status] || msg || 'Terjadi kesalahan. Coba lagi beberapa saat.');
+    // pesan dari server untuk 401 dan 403 (validasi login) dipakai, untuk 413 dan 429 dipakai versi bahasa Indonesia
+    const own = res.status === 413 || res.status === 429 ? FRIENDLY[res.status] : msg;
+    throw new ApiError(res.status, own || FRIENDLY[res.status] || 'Terjadi kesalahan. Coba lagi beberapa saat.');
   }
   return data as T;
 }

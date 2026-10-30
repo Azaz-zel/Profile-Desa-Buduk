@@ -46,6 +46,8 @@ export function configureApp(app: INestApplication) {
         directives: {
           'img-src': ["'self'", 'data:', 'blob:'],
           'frame-src': ['https://maps.google.com', 'https://www.google.com'],
+          // tanpa https (misal dicoba lewat IP lokal) aturan ini membuat semua file gagal dimuat
+          'upgrade-insecure-requests': process.env.COOKIE_SECURE === 'true' ? [] : null,
         },
       },
     }),

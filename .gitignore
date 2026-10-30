@@ -6,3 +6,4 @@ private-uploads
 coverage
 graphify-out
 .claude
+.playwright-mcp

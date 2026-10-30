@@ -89,6 +89,10 @@ describe('masuk dan hak akses', () => {
     expect(JSON.stringify(res.body)).not.toContain('scrypt');
   });
 
+  it('reset kata sandi akun yang tidak ada memberi 404, bukan 500', async () => {
+    await request(app.getHttpServer()).put('/api/admin/users/999999/password').set('Cookie', adminCookie).send({ password: 'kata-sandi-baru-1' }).expect(404);
+  });
+
   it('reset kata sandi memutus sesi lama', async () => {
     await prisma.user.create({ data: { username: 'tamu', name: 'Tamu', role: 'EDITOR', passwordHash: await hashPassword('kata-sandi-lama') } });
     const { cookie } = await login('tamu', 'kata-sandi-lama');

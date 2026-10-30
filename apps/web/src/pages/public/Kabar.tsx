@@ -112,7 +112,7 @@ export default function Kabar() {
                         <div key={a.id} className="agenda">
                           <p style={{ fontWeight: 700 }}>{a.eventAt && tanggalHari(a.eventAt)}</p>
                           <div className="stack" style={{ gap: 6 }}>
-                            <Link to={`/kabar/${a.id}`} style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.45 }}>{a.title}</Link>
+                            <Link className="tlink" to={`/kabar/${a.id}`} style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.45 }}>{a.title}</Link>
                             {a.eventPlace && <p>Tempat: {a.eventPlace}</p>}
                             {a.organizer && <p className="mute" style={{ fontSize: 17 }}>Penyelenggara: {a.organizer}</p>}
                           </div>

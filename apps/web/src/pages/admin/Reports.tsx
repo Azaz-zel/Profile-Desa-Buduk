@@ -106,7 +106,10 @@ export default function Reports() {
       <Load s={s}>
         {() =>
           list.length === 0 ? (
-            <Empty title="Tidak ada laporan di sini"><p className="mute">Belum ada laporan dengan status ini.</p></Empty>
+            <Empty title="Tidak ada laporan di sini">
+              <p className="mute">Belum ada laporan dengan status ini.</p>
+              {filter !== 'SEMUA' && <button type="button" className="btn btn-line" onClick={() => setFilter('SEMUA')}>Lihat Semua Laporan</button>}
+            </Empty>
           ) : (
             <div className="split">
               <div className="stack" style={{ gap: 10 }}>

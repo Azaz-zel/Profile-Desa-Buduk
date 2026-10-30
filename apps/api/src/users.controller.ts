@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { Auth, CurrentUser, hashPassword, SessionUser } from './auth';
 import { CreateUserDto, ResetPasswordDto } from './dto';
 import { PrismaService } from './prisma.service';
@@ -28,16 +28,18 @@ export class UsersController {
   @Put(':id/password')
   @HttpCode(204)
   async reset(@Param('id', ParseIntPipe) id: number, @Body() dto: ResetPasswordDto) {
-    await this.prisma.user.update({
+    const { count } = await this.prisma.user.updateMany({
       where: { id },
       data: { passwordHash: await hashPassword(dto.password), sessionVersion: { increment: 1 } },
     });
+    if (!count) throw new NotFoundException('Akun tidak ditemukan');
   }
 
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() me: SessionUser) {
     if (id === me.id) throw new BadRequestException('Tidak bisa menghapus akun sendiri');
-    await this.prisma.user.delete({ where: { id } });
+    const { count } = await this.prisma.user.deleteMany({ where: { id } });
+    if (!count) throw new NotFoundException('Akun tidak ditemukan');
   }
 }

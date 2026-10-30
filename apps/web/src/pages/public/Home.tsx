@@ -179,7 +179,7 @@ export default function Home() {
                   <div key={a.id} className="agenda">
                     <p className="num" style={{ fontWeight: 700 }}>{a.eventAt && tanggalHari(a.eventAt)}{a.eventAt && <><br />Pukul {jam(a.eventAt)}</>}</p>
                     <div className="stack" style={{ gap: 4 }}>
-                      <Link to={`/kabar/${a.id}`} style={{ fontSize: 20, fontWeight: 700 }}>{a.title}</Link>
+                      <Link className="tlink" to={`/kabar/${a.id}`} style={{ fontSize: 20, fontWeight: 700 }}>{a.title}</Link>
                       {a.eventPlace && <p>Tempat: {a.eventPlace}</p>}
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseInterceptors,
+  BadRequestException, Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UploadedFile, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Prisma } from '@prisma/client';
@@ -50,7 +50,8 @@ export class VillageController {
     const lines = await this.prisma.budgetLine.findMany({ where: { year }, orderBy: [{ category: 'asc' }, { sort: 'asc' }] });
     const meta = await this.setting<{ asOf?: string }>(`budget-${year}`, {});
     return {
-      years, year, updatedAt: meta.updatedAt,
+      // asOf: tanggal data dari sumbernya (data awal); setelah admin menyimpan, tanggal simpan yang dipakai
+      years, year, updatedAt: meta.asOf ?? meta.updatedAt,
       // nilai rupiah < 10^15 masih aman sebagai number di JavaScript
       lines: lines.map((l) => ({ category: l.category, label: l.label, planned: Number(l.planned), realized: Number(l.realized) })),
     };
@@ -88,6 +89,7 @@ export class VillageController {
   @Put('admin/budget/:year')
   @Auth('ADMIN')
   async saveBudget(@Param('year', ParseIntPipe) year: number, @Body() dto: BudgetDto) {
+    if (year < 2000 || year > 2100) throw new BadRequestException('Tahun anggaran tidak valid');
     await this.prisma.$transaction([
       this.prisma.budgetLine.deleteMany({ where: { year } }),
       this.prisma.budgetLine.createMany({

@@ -115,9 +115,9 @@ function Form({ post }: { post?: PostFull }) {
       )}
 
       <div className="field">
-        <label htmlFor="isi" style={{ fontSize: 19 }}>3. Isi kabar</label>
+        <label htmlFor="f-isi" style={{ fontSize: 19 }}>3. Isi kabar</label>
         <p id="h-isi" className="hint">Tulis seperti biasa. Tekan Enter dua kali untuk membuat paragraf baru.</p>
-        <textarea id="isi" name="body" className="inp" style={{ minHeight: 280 }} maxLength={50000} defaultValue={post?.body ?? ''} aria-invalid={errors.body ? true : undefined} aria-describedby={errors.body ? 'h-isi e-isi' : 'h-isi'} />
+        <textarea id="f-isi" name="body" className="inp" style={{ minHeight: 280 }} maxLength={50000} defaultValue={post?.body ?? ''} aria-invalid={errors.body ? true : undefined} aria-describedby={errors.body ? 'h-isi e-isi' : 'h-isi'} />
         {errors.body && <p id="e-isi" className="err">{errors.body}</p>}
       </div>
 

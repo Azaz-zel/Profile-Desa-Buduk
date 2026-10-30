@@ -32,6 +32,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 img { display: block; max-width: 100%; }
+::selection { background: var(--green); color: #fff; }
+input, textarea { caret-color: var(--green); }
+.tlink { display: inline-flex; align-items: center; min-height: 44px; }
 a { color: var(--green); text-underline-offset: 4px; }
 a:hover { color: var(--green-dark); }
 :focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }

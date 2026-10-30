@@ -12,7 +12,10 @@ interface Summary {
   recent: { id: number; title: string; type: string; status: string; updatedAt: string }[];
 }
 
-const daysAgo = (iso: string) => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
+const sejak = (iso: string) => {
+  const d = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
+  return d === 0 ? 'hari ini' : d === 1 ? 'kemarin' : `${d} hari lalu`;
+};
 
 export default function Dashboard() {
   useTitle('Kelola');
@@ -30,7 +33,7 @@ export default function Dashboard() {
         {(d) => {
           const todos: [string, string, string, string, string, string][] = [];
           if (d.newReports)
-            todos.push(['Penting', 'var(--red)', `${d.newReports} pengaduan baru belum dibaca`, d.oldestNew ? `Yang paling lama masuk ${daysAgo(d.oldestNew)} hari lalu.` : '', '/kelola/pengaduan', 'Baca Pengaduan']);
+            todos.push(['Penting', 'var(--red)', `${d.newReports} pengaduan baru belum dibaca`, d.oldestNew ? `Yang paling lama masuk ${sejak(d.oldestNew)}.` : '', '/kelola/pengaduan', 'Baca Pengaduan']);
           if (d.docRequests)
             todos.push(['Ada batas waktu', 'var(--amber)', `${d.docRequests} permintaan dokumen belum selesai`, 'Wajib dijawab paling lambat 10 hari kerja.', '/kelola/pengaduan', 'Jawab Permintaan']);
           if (me.role === 'ADMIN')
@@ -72,7 +75,7 @@ export default function Dashboard() {
                     {d.recent.map((p) => (
                       <div key={p.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(140px, auto) minmax(0, 1fr)', gap: 16, padding: '16px 0', borderTop: '1px solid var(--line)' }}>
                         <span className="mute">{tanggal(p.updatedAt)}</span>
-                        <Link to={`/kelola/kabar/${p.id}`}>{p.title}</Link>
+                        <Link className="tlink" to={`/kelola/kabar/${p.id}`}>{p.title}</Link>
                       </div>
                     ))}
                   </div>
